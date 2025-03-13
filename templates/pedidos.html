@@ -1,0 +1,341 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Pedidos</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #2d3748;
+            line-height: 1.6;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-export {
+            background: #4299e1;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: #f8fafc;
+            font-weight: 600;
+            color: #4a5568;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        tr:hover {
+            background: #f7fafc;
+        }
+
+        .status-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .parcela-status {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.8rem;
+        }
+
+        .status-pago, .status-pendente {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .status-pago {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .status-pendente {
+            background: #fed7d7;
+            color: #9b2c2c;
+        }
+
+        .acoes {
+            display: flex;
+            gap: 0.25rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            text-decoration: none;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            white-space: nowrap;
+        }
+
+        .btn-whatsapp {
+            background: #25D366;
+        }
+
+        .btn-pagar {
+            background: #48bb78;
+        }
+
+        .btn-cancelar {
+            background: #f56565;
+        }
+
+        .btn-deletar {
+            background: #e53e3e;
+        }
+
+        .voltar {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0.5rem;
+            }
+
+            .container {
+                padding: 0.5rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .table-responsive {
+                margin: 0 -0.5rem;
+                border-radius: 0;
+            }
+
+            .btn {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.75rem;
+            }
+
+            .status-container {
+                min-width: 120px;
+            }
+
+            .export-buttons {
+                justify-content: center;
+            }
+        }
+
+        .nao-solicitado {
+            color: #718096;
+            font-style: italic;
+        }
+        
+        td div {
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+        
+        td strong {
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Lista de Pedidos</h1>
+        
+        <div class="export-buttons">
+            <a href="{{ url_for('exportar', formato='excel') }}" class="btn btn-export">
+                <i class="fas fa-file-excel"></i> Excel
+            </a>
+            <a href="{{ url_for('exportar', formato='pdf') }}" class="btn btn-export">
+                <i class="fas fa-file-pdf"></i> PDF
+            </a>
+            <a href="{{ url_for('exportar', formato='word') }}" class="btn btn-export">
+                <i class="fas fa-file-word"></i> Word
+            </a>
+        </div>
+        
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>WhatsApp</th>
+                        <th>Camisa</th>
+                        <th>Moletom</th>
+                        <th>Nome na Camisa</th>
+                        <th>Data do Pedido</th>
+                        <th>Status Pagamento</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pedido in pedidos %}
+                    <tr>
+                        <td>{{ pedido.nome_aluno }}</td>
+                        <td>{{ pedido.whatsapp }}</td>
+                        <td>
+                            <strong>Modelo:</strong> {{ pedido.modelo_camisa }}<br>
+                            <strong>Tamanho:</strong> {{ pedido.tamanho_camisa }}
+                        </td>
+                        <td>
+                            {% if pedido.quer_moletom %}
+                                <strong>Modelo:</strong> {{ pedido.modelo_moletom or 'Não informado' }}<br>
+                                <strong>Tamanho:</strong> {{ pedido.tamanho_moletom or 'Não informado' }}
+                            {% else %}
+                                <span class="nao-solicitado">Não solicitado</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ pedido.nome_na_camisa }}</td>
+                        <td>{{ pedido.data_pedido.strftime('%d/%m/%Y %H:%M') }}</td>
+                        <td>
+                            <div class="status-container">
+                                <div class="parcela-status">
+                                    <span class="parcela-label">1ª Parcela:</span>
+                                    <span class="status-{{ 'pago' if pedido.primeira_parcela_paga else 'pendente' }}">
+                                        {{ "Pago" if pedido.primeira_parcela_paga else "Pendente" }}
+                                        {% if pedido.data_primeira_parcela %}
+                                            <br><small>{{ pedido.data_primeira_parcela.strftime('%d/%m/%Y') }}</small>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <div class="parcela-status">
+                                    <span class="parcela-label">2ª Parcela:</span>
+                                    <span class="status-{{ 'pago' if pedido.segunda_parcela_paga else 'pendente' }}">
+                                        {{ "Pago" if pedido.segunda_parcela_paga else "Pendente" }}
+                                        {% if pedido.data_segunda_parcela %}
+                                            <br><small>{{ pedido.data_segunda_parcela.strftime('%d/%m/%Y') }}</small>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="acoes">
+                            {% if not pedido.primeira_parcela_paga %}
+                                <a href="{{ url_for('enviar_whatsapp', id=pedido.id, parcela='primeira') }}" 
+                                   class="btn btn-whatsapp"
+                                   target="_blank">
+                                    <i class="fab fa-whatsapp"></i> Cobrar 1ª
+                                </a>
+                            {% endif %}
+                            
+                            {% if pedido.primeira_parcela_paga and not pedido.segunda_parcela_paga %}
+                                <a href="{{ url_for('enviar_whatsapp', id=pedido.id, parcela='segunda') }}" 
+                                   class="btn btn-whatsapp"
+                                   target="_blank">
+                                    <i class="fab fa-whatsapp"></i> Cobrar 2ª
+                                </a>
+                            {% endif %}
+                            
+                            {% if not pedido.primeira_parcela_paga %}
+                                <a href="{{ url_for('marcar_primeira_parcela', id=pedido.id) }}" 
+                                   class="btn btn-pagar">
+                                    Marcar 1ª Parcela
+                                </a>
+                            {% elif not pedido.segunda_parcela_paga %}
+                                <a href="{{ url_for('marcar_segunda_parcela', id=pedido.id) }}" 
+                                   class="btn btn-pagar">
+                                    Marcar 2ª Parcela
+                                </a>
+                            {% else %}
+                                <a href="{{ url_for('cancelar_pagamento', id=pedido.id) }}" 
+                                   class="btn btn-cancelar">
+                                    Cancelar Pagamentos
+                                </a>
+                            {% endif %}
+                            
+                            <a href="{{ url_for('deletar_pedido', id=pedido.id) }}" 
+                               class="btn btn-deletar"
+                               onclick="return confirm('Tem certeza que deseja deletar este pedido?')">
+                                Deletar
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <a href="{{ url_for('index') }}" class="voltar">
+            <i class="fas fa-arrow-left"></i> Voltar para o formulário
+        </a>
+    </div>
+</body>
+</html>
+{% endblock %}

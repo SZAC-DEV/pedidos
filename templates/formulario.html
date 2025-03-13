@@ -1,0 +1,433 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Formulário de Pedido de Uniformes</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #2d3748;
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2.5rem;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            color: #1a202c;
+            text-align: center;
+            margin-bottom: 2.5rem;
+            font-size: 2.2rem;
+            font-weight: 700;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.8rem;
+            color: #4a5568;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input[type="text"]:focus,
+        select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+            outline: none;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 1rem;
+            background: #f7fafc;
+            border-radius: 12px;
+            margin: 1rem 0;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.2rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+        }
+
+        .info-text {
+            background: #f8f9fa;
+            padding: 1.2rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #4a5568;
+            border-left: 4px solid #667eea;
+        }
+
+        .size-info {
+            font-size: 0.85rem;
+            color: #718096;
+            margin-top: 0.5rem;
+        }
+
+        .nav-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #764ba2;
+        }
+
+        .moletom-sizes {
+            background: #f8f9fa;
+            padding: 1.2rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Animações */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pedido de Uniformes</h1>
+        
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    {% if 'pedido enviado' in message.lower() %}
+                        <div class="alert-success" style="
+                            background: #c6f6d5;
+                            color: #276749;
+                            padding: 1.2rem;
+                            border-radius: 12px;
+                            margin-bottom: 2rem;
+                            text-align: center;
+                            font-weight: 600;
+                            animation: fadeIn 0.5s ease-out;
+                            border-left: 4px solid #38a169;
+                        ">
+                            <i class="fas fa-check-circle" style="margin-right: 0.5rem;"></i>
+                            {{ message }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form id="pedidoForm" method="POST" action="{{ url_for('criar_pedido') }}">
+            <div class="form-group">
+                <label for="nome_aluno">Nome:</label>
+                <input type="text" id="nome_aluno" name="nome_aluno" required>
+            </div>
+
+            <div class="form-group">
+                <label for="whatsapp">WhatsApp:</label>
+                <input type="tel" id="whatsapp" name="whatsapp" 
+                       placeholder="(99) 99999-9999" 
+                       pattern="\(\d{2}\)\s\d{5}-\d{4}"
+                       required>
+                <span class="size-info">Formato: (99) 99999-9999</span>
+            </div>
+
+            <div class="form-group">
+                <label for="tamanho_camisa">Tamanho da Camisa:</label>
+                <select id="tamanho_camisa" name="tamanho_camisa" required>
+                    <option value="16">16 (Comprimento: 63cm, Cintura: 46cm)</option>
+                    <option value="P">P (Comprimento: 70cm, Cintura: 48cm)</option>
+                    <option value="M">M (Comprimento: 73cm, Cintura: 50cm)</option>
+                    <option value="G">G (Comprimento: 76cm, Cintura: 53cm)</option>
+                    <option value="XG">XG (Comprimento: 79cm, Cintura: 58cm)</option>
+                    <option value="XXG">XXG (Comprimento: 79cm, Cintura: 63cm)</option>
+                    <option value="XXL">XXL (Comprimento: 83cm, Cintura: 74cm)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="modelo_camisa">Modelo da Camisa:</label>
+                <select id="modelo_camisa" name="modelo_camisa" required>
+                    <option value="Tradicional">Tradicional (Camiseta)</option>
+                    <option value="Baby Look">Baby Look</option>
+                </select>
+            </div>
+
+            <div id="medidas_baby_look" style="display: none;">
+                <div class="form-group">
+                    <label for="tamanho_baby_look">Tamanho Baby Look:</label>
+                    <select id="tamanho_baby_look" name="tamanho_baby_look">
+                        <option value="PP">PP (Comp: 57cm, Cintura: 36cm, Quadril: 42cm, Busto: 39cm)</option>
+                        <option value="P">P (Comp: 58cm, Cintura: 39cm, Quadril: 45cm, Busto: 42cm)</option>
+                        <option value="M">M (Comp: 60cm, Cintura: 41cm, Quadril: 49cm, Busto: 44cm)</option>
+                        <option value="G">G (Comp: 66cm, Cintura: 43cm, Quadril: 51cm, Busto: 46cm)</option>
+                        <option value="XG">XG (Comp: 67cm, Cintura: 48cm, Quadril: 54cm, Busto: 50cm)</option>
+                        <option value="XXG">XXG (Comp: 70cm, Cintura: 52cm, Quadril: 60cm, Busto: 54cm)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="quer_moletom" name="quer_moletom" value="true">
+                    Deseja incluir moletom?
+                </label>
+            </div>
+
+            <div class="form-group" id="div_tamanho_moletom" style="display: none;">
+                <label for="modelo_moletom">Modelo do Moletom:</label>
+                <select id="modelo_moletom" name="modelo_moletom">
+                    <option value="">Selecione o modelo</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Feminino">Feminino</option>
+                </select>
+
+                <div id="tamanhos_container">
+                    <label for="tamanho_moletom">Tamanho do Moletom:</label>
+                    <select id="tamanho_moletom" name="tamanho_moletom">
+                        <option value="">Selecione primeiro o modelo</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="nome_na_camisa">Nome que será estampado:</label>
+                <input type="text" id="nome_na_camisa" name="nome_na_camisa" required>
+            </div>
+
+            <div class="price-info" style="
+                background: #f8f9fa;
+                padding: 1.5rem;
+                border-radius: 12px;
+                margin: 2rem 0;
+                border-left: 4px solid #667eea;
+            ">
+                <h3 style="
+                    color: #2d3748;
+                    margin-bottom: 1rem;
+                    font-size: 1.1rem;
+                ">Valores:</h3>
+                <ul style="
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
+                ">
+                    <li style="margin-bottom: 0.5rem;">
+                        <strong>Moletom + Camisa:</strong> R$ 295,00 (2x de R$ 147,50)
+                    </li>
+                    <li>
+                        <strong>Apenas Camisa:</strong> R$ 95,00 (2x de R$ 47,50)
+                    </li>
+                </ul>
+            </div>
+
+            <div class="form-group checkbox-group" style="
+                background: #edf2ff;
+                padding: 1.2rem;
+                border-radius: 12px;
+                margin: 1rem 0;
+            ">
+                <input type="checkbox" id="ciente_pagamento" name="ciente_pagamento" required>
+                <label for="ciente_pagamento" style="margin: 0;">
+                    Estou ciente que serei contactado(a) via WhatsApp para efetuar o pagamento
+                </label>
+            </div>
+
+            <button type="submit" style="
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 1.2rem;
+                border: none;
+                border-radius: 12px;
+                font-size: 1.1rem;
+                font-weight: 600;
+                width: 100%;
+                cursor: pointer;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            ">ENVIAR PEDIDO</button>
+        </form>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('Script iniciado');
+                
+                const checkboxMoletom = document.getElementById('quer_moletom');
+                const divMoletom = document.getElementById('div_tamanho_moletom');
+                const modeloSelect = document.getElementById('modelo_moletom');
+                const tamanhoSelect = document.getElementById('tamanho_moletom');
+                
+                console.log('Checkbox:', checkboxMoletom);
+                console.log('Div Moletom:', divMoletom);
+                
+                checkboxMoletom.addEventListener('change', function() {
+                    console.log('Checkbox alterado:', this.checked);
+                    if (this.checked) {
+                        divMoletom.style.display = 'block';
+                        modeloSelect.required = true;
+                        tamanhoSelect.required = true;
+                    } else {
+                        divMoletom.style.display = 'none';
+                        modeloSelect.required = false;
+                        tamanhoSelect.required = false;
+                        modeloSelect.value = '';
+                        tamanhoSelect.value = '';
+                    }
+                });
+
+                modeloSelect.addEventListener('change', function() {
+                    console.log('Modelo alterado:', this.value);
+                    tamanhoSelect.innerHTML = '<option value="">Selecione o tamanho</option>';
+                    
+                    if (this.value === 'Masculino') {
+                        const tamanhos = {
+                            'P': 'P (Comp: 67cm, Cintura: 55cm, Manga: 59cm)',
+                            'M': 'M (Comp: 70cm, Cintura: 57cm, Manga: 61cm)',
+                            'G': 'G (Comp: 76cm, Cintura: 60cm, Manga: 65cm)',
+                            'XG': 'XG (Comp: 76cm, Cintura: 64cm, Manga: 65cm)',
+                            'XXG': 'XXG (Comp: 80cm, Cintura: 67cm, Manga: 68cm)'
+                        };
+                        Object.entries(tamanhos).forEach(([valor, texto]) => {
+                            const option = new Option(texto, valor);
+                            tamanhoSelect.add(option);
+                        });
+                    } else if (this.value === 'Feminino') {
+                        const tamanhos = {
+                            'PP': 'PP (Comp: 64cm, Cintura: 44cm, Manga: 57cm)',
+                            'P': 'P (Comp: 65cm, Cintura: 46cm, Manga: 59cm)',
+                            'M': 'M (Comp: 66cm, Cintura: 50cm, Manga: 60cm)',
+                            'G': 'G (Comp: 67cm, Cintura: 54cm, Manga: 62cm)',
+                            'XG': 'XG (Comp: 68cm, Cintura: 60cm, Manga: 63cm)'
+                        };
+                        Object.entries(tamanhos).forEach(([valor, texto]) => {
+                            const option = new Option(texto, valor);
+                            tamanhoSelect.add(option);
+                        });
+                    }
+                });
+
+                document.getElementById('modelo_camisa').addEventListener('change', function() {
+                    const medidasBabyLook = document.getElementById('medidas_baby_look');
+                    const tamanhoCamisa = document.getElementById('tamanho_camisa');
+                    
+                    if (this.value === 'Baby Look') {
+                        medidasBabyLook.style.display = 'block';
+                        tamanhoCamisa.parentElement.style.display = 'none';
+                    } else {
+                        medidasBabyLook.style.display = 'none';
+                        tamanhoCamisa.parentElement.style.display = 'block';
+                    }
+                });
+
+                // Máscara para o campo de WhatsApp
+                document.getElementById('whatsapp').addEventListener('input', function (e) {
+                    let x = e.target.value.replace(/\D/g, '').match(/(\d{0,2})(\d{0,5})(\d{0,4})/);
+                    e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+                });
+            });
+        </script>
+    </div>
+</body>
+</html>
+{% endblock %}

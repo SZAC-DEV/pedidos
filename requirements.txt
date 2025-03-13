@@ -1,0 +1,8 @@
+flask
+flask-sqlalchemy
+pandas
+openpyxl
+python-docx
+reportlab
+qrcode
+pyngrok
